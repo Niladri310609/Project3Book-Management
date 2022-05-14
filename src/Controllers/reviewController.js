@@ -32,7 +32,7 @@ const createReview = async function (req, res) {
         if (review) {
             if (!validation.isValid(review)) return res.status(400).send({ status: false, message: "Please Enter any review" });
         }
-
+     //if user is mentioning deleted:true at the time of creation of review
         if (isDeleted == true) return res.status(400).send({ status: false, message: "You can't add this key at review creation time." })
 
         reviewData['bookId'] = bookIdParams
