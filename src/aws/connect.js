@@ -1,33 +1,9 @@
-const express = require('express');
-const router = express.Router();
+ const aws = require('aws-sdk');
+ 
 
-const userController = require("../Controllers/userController")
-const bookController = require("../Controllers/bookController")
-const reviewController = require("../Controllers/reviewController")
-const middleware = require("../Middlewares/auth")
-const aws = require("aws-sdk")
-const connection = require("../aws/connect")
-
-
-//User & Login API
-router.post("/register", userController.userData);
-router.post("/login", userController.loginUser);
-
-//Book API
-router.post("/books", /*middleware.mid1*/bookController.createBook)
-router.get("/books", middleware.mid1, bookController.getBooks)
-router.get("/books/:bookId", middleware.mid1, bookController.getReviewDetails)
-router.put("/books/:bookId", middleware.mid1, bookController.updatebook)
-router.delete("/books/:bookId", middleware.mid1, bookController.deleteBook)
-
-//Review API
-router.post("/books/:bookId/review", reviewController.createReview)
-router.put("/books/:bookId/review/:reviewId", reviewController.updateReview)
-router.delete("/books/:bookId/review/:reviewId", reviewController.deleteReview)
-//configuration of AWS3 link
-/*aws.config.update({
+ aws.config.update({
     accessKeyId: "AKIAY3L35MCRUJ6WPO6J",
-    secretAccessKeyId: "7gq2ENIfbMVs0jYmFFsoJnh/hhQstqPBNmaX9Io1+08tQrIkFVyDFqSft4J",
+    secretAccessKey: "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",
     region: "ap-south-1"
 })
 
@@ -60,7 +36,8 @@ let uploadFile= async ( file) =>{
    })
 }
 
-router.post("/write-file-aws", async function(req, res){
+
+/*let connection = async function(req, res){
 
     try{
         let files= req.files
@@ -79,6 +56,6 @@ router.post("/write-file-aws", async function(req, res){
         res.status(500).send({msg: err})
     }
     
-})*/
+}*/
 
-module.exports = router
+module.exports={uploadFile}

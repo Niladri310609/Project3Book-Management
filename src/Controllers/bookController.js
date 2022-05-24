@@ -3,12 +3,27 @@ const reviewModel = require("../Models/reviewModel");
 const validation = require("../Middlewares/validation");
 const userModel = require("../Models/userModel");
 const ObjectId = require("mongoose").Types.ObjectId;
+const aws = require("aws-sdk")
+const {uploadFile} = require("../aws/connect");
+
 
 
 //==========================================================Create Book Api======================================================
 const createBook = async function (req, res) {
     try {
         const data = req.body;
+        let files= req.files;
+        
+        if(files && files.length>0){
+            //upload to s3 and get the uploaded link
+            // res.send the link back to frontend/postman
+            var uploadedFileURL= await uploadFile( files[0] )
+           // res.status(201).send({msg: "file uploaded succesfully", data: uploadedFileURL})
+         
+        }
+        else{
+            res.status(400).send({ msg: "No file found" })
+        }
         if (!validation.isValidRequest(data))
             return res.status(400).send({ status: false, message: "No input by user." });
 
@@ -60,7 +75,7 @@ const createBook = async function (req, res) {
             return res.status(400).send({ status: false, message: "Category is not valid(Should cointain alphabets only)" });
 
         //==============================================================================Validate subcategory
-        if (!validation.isValid(subcategory))
+        /*if (!validation.isValid(subcategory))
             return res.status(400).send({ status: false, message: "Subcategory is required" });
             if (typeof (subcategory) == "object") {
                 for (let i = 0; i < subcategory.length; i++) {
@@ -71,7 +86,7 @@ const createBook = async function (req, res) {
 
         if (!validation.isValidScripts(subcategory))
             return res.status(400).send({ status: false, message: "Subcategory is invalid (Should Contain Alphabets, numbers, quotation marks  & [@ , . ; : ? & ! _ - $]." });
-
+         */
 
         //==============================================================================Validate releasedAt
         if (!validation.isValid(releasedAt)) return res.status(400).send({ status: false, message: "Release date is Required" })
@@ -79,15 +94,16 @@ const createBook = async function (req, res) {
 
         if (isDeleted == true) return res.status(400).send({ status: false, message: "You can't add this key at book creation time." })
 
-        const bookData = { title, excerpt, userId, ISBN, category, subcategory, releasedAt };
+        const bookData = { title, bookCover:uploadedFileURL, excerpt, userId, ISBN, category, subcategory, releasedAt };
 
         //=============================================================================Authorization
-        const userIdFromToken = req.userId
-        if (userIdFromToken !== userId) return res.status(403).send({ status: false, message: "Unauthorized Access." })
+      /*  const userIdFromToken = req.userId
+        if (userIdFromToken !== userId) return res.status(403).send({ status: false, message: "Unauthorized Access." })*/
 
         const savedBook = await bookModel.create(bookData);
         return res.status(201).send({ status: true, message: "Book Created Successfully", data: savedBook });
     } catch (err) {
+        console.log(err);
         return res.status(500).send({ status: false, message: err.message });
     }
 };
@@ -265,6 +281,7 @@ const deleteBook = async function (req, res) {
     catch (err) {
         return res.status(500).send({ status: false, message: err.message })
     }
+    
 }
 
 
