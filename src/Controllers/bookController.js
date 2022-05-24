@@ -75,7 +75,7 @@ const createBook = async function (req, res) {
             return res.status(400).send({ status: false, message: "Category is not valid(Should cointain alphabets only)" });
 
         //==============================================================================Validate subcategory
-        /*if (!validation.isValid(subcategory))
+        if (!validation.isValid(subcategory))
             return res.status(400).send({ status: false, message: "Subcategory is required" });
             if (typeof (subcategory) == "object") {
                 for (let i = 0; i < subcategory.length; i++) {
@@ -86,7 +86,7 @@ const createBook = async function (req, res) {
 
         if (!validation.isValidScripts(subcategory))
             return res.status(400).send({ status: false, message: "Subcategory is invalid (Should Contain Alphabets, numbers, quotation marks  & [@ , . ; : ? & ! _ - $]." });
-         */
+         
 
         //==============================================================================Validate releasedAt
         if (!validation.isValid(releasedAt)) return res.status(400).send({ status: false, message: "Release date is Required" })
@@ -97,8 +97,8 @@ const createBook = async function (req, res) {
         const bookData = { title, bookCover:uploadedFileURL, excerpt, userId, ISBN, category, subcategory, releasedAt };
 
         //=============================================================================Authorization
-      /*  const userIdFromToken = req.userId
-        if (userIdFromToken !== userId) return res.status(403).send({ status: false, message: "Unauthorized Access." })*/
+        const userIdFromToken = req.userId
+        if (userIdFromToken !== userId) return res.status(403).send({ status: false, message: "Unauthorized Access." })
 
         const savedBook = await bookModel.create(bookData);
         return res.status(201).send({ status: true, message: "Book Created Successfully", data: savedBook });
